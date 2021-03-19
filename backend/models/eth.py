@@ -1,5 +1,6 @@
-from datetime import datetime
+import time
 import uuid
+
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import BaseModel
@@ -22,7 +23,7 @@ class WalletDeposit(db.Model):
     status = db.Column(db.Boolean, default=False)
     address = db.Column(db.String(100))
     insertTime = db.Column(db.BigInteger)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
 
 class WalletWithdraw(db.Model):
@@ -33,7 +34,7 @@ class WalletWithdraw(db.Model):
     coin = db.Column(db.String(50))
     address = db.Column(db.String(50))
     applyTime = db.Column(db.String(50))
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
 
 class Coin(BaseModel):

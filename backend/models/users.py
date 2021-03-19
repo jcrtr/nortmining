@@ -1,5 +1,7 @@
+import time
 from datetime import datetime
 import bcrypt as bcrypt
+from sqlalchemy import DECIMAL
 from sqlalchemy.dialects.postgresql import UUID
 from . import db
 
@@ -20,7 +22,7 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=True)
     last_name = db.Column(db.String(50), nullable=True)
     about = db.Column(db.Text, nullable=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -59,24 +61,35 @@ class UserBalance(BaseModel):
 
     user_id = db.Column(db.ForeignKey('user.id'))
     total_usd = db.Column(db.BigInteger)
-    total_eth = db.Column(db.BigInteger)
+    total_eth = db.Column(db.Numeric(12, 6))
+    date_update = db.Column(db.BigInteger, default=int(time.time()))
 
 
 class UserHash(BaseModel):
     __tablename__ = 'user_hash'
 
     user_id = db.Column(db.ForeignKey('user.id'))
-    total_hash = db.Column(db.BigInteger)
+    total_hash = db.Column(db.Numeric(12, 2))
     percent_hash = db.Column(db.BigInteger)
-    date_update = db.Column(db.DateTime, default=datetime.utcnow)
+    date_update = db.Column(db.BigInteger, default=int(time.time()))
 
 
-# class UserPayments(BaseModel):
-#     __tablename__ = 'user_payments'
-#
-#     user_id = db.Column(db.ForeignKey('user.uuid_id'))
-#     usd = db.Column(db.BigInteger)
-#     eth = db.Column(db.BigInteger)
+class UserPayments(BaseModel):
+    __tablename__ = 'user_payments'
+
+    user_id = db.Column(db.ForeignKey('user.id'))
+    usd = db.Column(db.BigInteger)
+    eth = db.Column(db.Numeric(12, 6))
+
+
+class UserDeposit(db.Model):
+    __tablename__ = 'user_deposit'
+
+    user_id = db.Column(db.ForeignKey('user.id'))
+    usd = db.Column(db.BigInteger)
+    eth = db.Column(db.Numeric(12, 6))
+    insertTime = db.Column(db.BigInteger)
+
 
 class BlacklistToken(db.Model):
 
@@ -84,4 +97,4 @@ class BlacklistToken(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(500), unique=True, nullable=False)
-    blacklisted_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    blacklisted_on = db.Column(db.BigInteger, default=int(time.time()))

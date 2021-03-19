@@ -1,12 +1,15 @@
 from datetime import datetime
 from . import db
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
+import time
 
 
 class BaseModel(db.Model):
     __abstract__ = True
 
-    id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
+    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
 
 class PriceElect(BaseModel):

@@ -17,7 +17,7 @@ class LoginUser(graphene.Mutation):
             user = await User.query.where(User.email == input.email).gino.first()
             print(user)
             if not user:
-                return LoginUser(message='Invalid email or password')
+                return LoginUser(message='Not email')
 
             if user.password != input.password:
                 return LoginUser(message='Invalid email or password')
