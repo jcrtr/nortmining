@@ -37,12 +37,6 @@ async def farm_hash_user(result, hash_all):
             percent = (total / hash_all) * 100
             percent_format = format(percent, '.3f')
 
-            await UserBalance.update.values(
-                user_id=total,
-                total_usd=percent_format,
-                total_eth=datetime.utcnow,
-            ).where(UserHash.user_id == item).gino.status()
-
             await UserHash.update.values(
                 user_id=item,
                 total_hash=total,

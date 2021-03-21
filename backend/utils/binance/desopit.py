@@ -75,12 +75,22 @@ async def user_balance_deposit_update(data):
             user_id = result_user_all[0]
 
             user_hash = await UserHash.select('percent_hash').where(UserHash.user_id == user_id).gino.all()
-            user_percent_hash = [user.percent_hash for user in user_hash][0]
+            commission_db = await User.select('commission').where(User.id == user_id).gino.all()
+            user_percent_hash = [user.commission for user in user_hash][0]
+            commission = [user.commission for user in commission_db][0]
+            comsa = int(commission)
+
             percent_hash = (int(user_percent_hash) / 100)
 
             eth_price = await receive_eth_price(user_percent_hash)
 
-            ETH = int(data['amount']) * percent_hash
+            if comsa <= 0:
+                ETH = int(data['amount']) * percent_hash
+            else:
+                _comsa = (comsa / 100)
+                _ETH = (int(data['amount']) * percent_hash)
+                ETH = _ETH - (_ETH * _comsa)
+
             USD = eth_price * ETH
 
             try:

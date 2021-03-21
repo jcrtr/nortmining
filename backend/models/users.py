@@ -23,6 +23,7 @@ class User(db.Model):
     last_name = db.Column(db.String(50), nullable=True)
     about = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.BigInteger, default=int(time.time()))
+    commission = db.Column(db.Integer, default=10)
 
     def __init__(self, **kw):
         super().__init__(**kw)
