@@ -1,14 +1,16 @@
 import asyncpg
 import requests
+
+from backend.config import URL_ETH_PRICE
 from backend.models.eth import Coin
 
 
-async def receive_eth_price(url):
+async def receive_eth_price():
 
     payload = {}
     headers = {}
 
-    response = requests.request("GET", url, headers=headers, data=payload)
+    response = requests.request("GET", URL_ETH_PRICE, headers=headers, data=payload)
     data = response.json()['data']
 
     try:

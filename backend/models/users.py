@@ -81,6 +81,7 @@ class UserPayments(BaseModel):
     user_id = db.Column(db.ForeignKey('user.id'))
     usd = db.Column(db.BigInteger)
     eth = db.Column(db.Numeric(12, 6))
+    apply_time = db.Column(db.BigInteger)
 
 
 class UserDeposit(db.Model):
@@ -89,7 +90,7 @@ class UserDeposit(db.Model):
     user_id = db.Column(db.ForeignKey('user.id'))
     usd = db.Column(db.BigInteger)
     eth = db.Column(db.Numeric(12, 6))
-    insertTime = db.Column(db.BigInteger)
+    insert_time = db.Column(db.BigInteger)
 
 
 class BlacklistToken(db.Model):

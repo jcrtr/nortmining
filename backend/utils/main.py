@@ -3,7 +3,6 @@ from .eth import receive_eth_price
 from .farm import receive_farm
 from ..config import WALLET, API_KEY, API_SECRET
 
-eth_coin_url = "https://api.coincap.io/v2/assets/ethereum"
 binance_balance_url = "https://api.binance.com/api/v3/account?"
 pool_url = 'https://api.ethermine.org/miner/'
 
