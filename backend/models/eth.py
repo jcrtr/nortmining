@@ -24,6 +24,7 @@ class WalletDeposit(db.Model):
     address = db.Column(db.String(100))
     insertTime = db.Column(db.BigInteger)
     date_created = db.Column(db.BigInteger, default=int(time.time()))
+    is_binance = db.Column(db.Boolean, default=True)
 
 
 class WalletWithdraw(db.Model):
@@ -35,6 +36,7 @@ class WalletWithdraw(db.Model):
     address = db.Column(db.String(50))
     applyTime = db.Column(db.String(50))
     date_created = db.Column(db.BigInteger, default=int(time.time()))
+    is_binance = db.Column(db.Boolean, default=True)
 
 
 class Coin(BaseModel):

@@ -1,5 +1,5 @@
 from backend.utils.eth import receive_eth_price
-from .sql.create import create_user_deposit, create_user_payment
+from .sql.create import sql_create_user_deposit, sql_create_user_payment
 from .sql.get import sql_get_balance, sql_get_user_percent_hash, sql_get_commission
 from .sql.update import sql_update_balance
 
@@ -21,7 +21,7 @@ async def update_balance(operate=int, user_id=str, amount=float, time=int):
 
         usd_mining = eth_price * eth_commission
         usd = eth_price * eth
-        await create_user_deposit(
+        await sql_create_user_deposit(
             user_id=user_id,
             usd=usd_mining,
             eth=eth_commission,
@@ -31,7 +31,12 @@ async def update_balance(operate=int, user_id=str, amount=float, time=int):
     else:
         eth = balance - amount
         usd = eth_price * eth
-
+        await sql_create_user_payment(
+            user_id=user_id,
+            usd=usd,
+            eth=eth,
+            apply_time=time
+        )
 
     await sql_update_balance(
         user_id=user_id,

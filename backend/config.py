@@ -22,3 +22,5 @@ API_KEY = 'DjJL4NySy7o64uzhpRk1H4OAOobzY3n0keXevV9pGAmyQUeeaE35CIIReyvXJW5q'
 API_SECRET = 'xrCv7faH8Xg3cvgCZwNbwbVHQogMhJVf51K7r3NKtd9wRGHHudWU7faraAv8NcRv'
 
 URL_ETH_PRICE = 'https://api.coincap.io/v2/assets/ethereum'
+
+URL_POOL = 'https://api.ethermine.org/miner/'

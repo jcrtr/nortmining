@@ -82,6 +82,7 @@ class UserPayments(BaseModel):
     usd = db.Column(db.BigInteger)
     eth = db.Column(db.Numeric(12, 6))
     apply_time = db.Column(db.BigInteger)
+    is_binance = db.Column(db.Boolean, default=True)
 
 
 class UserDeposit(db.Model):
@@ -91,6 +92,7 @@ class UserDeposit(db.Model):
     usd = db.Column(db.BigInteger)
     eth = db.Column(db.Numeric(12, 6))
     insert_time = db.Column(db.BigInteger)
+    is_binance = db.Column(db.Boolean, default=True)
 
 
 class BlacklistToken(db.Model):

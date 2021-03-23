@@ -1,4 +1,4 @@
-from backend.models.users import UserBalance, User, UserHash
+from backend.models.users import UserBalance, User, UserHash, Wallet
 
 
 async def sql_get_user_id():
@@ -35,3 +35,9 @@ async def sql_get_balance(user_id):
     total_eth = [balance.total_eth for balance in result_db][0]
     return float(total_eth)
 
+
+async def sql_get_wallet(user_id):
+    get_eth_wallet = Wallet.select('address') \
+        .where(Wallet.user_id == user_id).gino.first()
+    result = [wallet.address for wallet in get_eth_wallet]
+    return result
