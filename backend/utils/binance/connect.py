@@ -4,7 +4,7 @@ import time
 import urllib
 import requests
 from urllib.parse import urlparse
-from backend.config import API_KEY, API_SECRET
+from ...config import API_KEY, API_SECRET
 
 
 async def connect_binance(url, **kwargs):

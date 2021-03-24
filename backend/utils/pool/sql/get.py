@@ -1,4 +1,4 @@
-from backend.models.farm import Farm, FarmUser
+from ....models.farm import Farm, FarmUser
 
 
 async def sql_get_farm_name():

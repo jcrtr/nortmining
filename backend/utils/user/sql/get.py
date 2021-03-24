@@ -1,9 +1,9 @@
-from backend.models.users import UserBalance, User, UserHash, Wallet
+from ....models.users import UserBalance, User, UserHash, Wallet
 
 
 async def sql_get_user_id():
     result_db = await User.select('id').gino.all()
-    result = [user.id for user in result_db]
+    result = [str(user.id) for user in result_db]
     return result
 
 
@@ -29,8 +29,7 @@ async def sql_get_balance(user_id):
     result_db = await UserBalance \
         .select('total_eth') \
         .where(UserBalance.user_id == user_id) \
-        .order_by(UserBalance.date_created.asc()) \
-        .gino.all()
+        .order_by(UserBalance.date_created.asc()).gino.all()
 
     total_eth = [balance.total_eth for balance in result_db][0]
     return float(total_eth)

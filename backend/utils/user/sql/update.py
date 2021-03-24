@@ -1,6 +1,6 @@
 import time
 
-from backend.models.users import UserBalance
+from ....models.users import UserBalance
 
 
 async def sql_update_balance(user_id, usd, eth):

@@ -1,8 +1,9 @@
 import asyncpg
 import requests
 
-from backend.config import URL_ETH_PRICE
-from backend.models.eth import Coin
+from ...config import URL_ETH_PRICE
+from .sql.create import sql_create_coin
+from .sql.update import sql_update_coin
 
 
 async def receive_eth_price():
@@ -14,16 +15,17 @@ async def receive_eth_price():
     data = response.json()['data']
 
     try:
-        await Coin.create(
+        await sql_create_coin(
             name=data['name'],
             symbol=data['symbol'],
             price_usd=float(data['priceUsd']),
             avr_usd=float(data['vwap24Hr']),
         )
     except asyncpg.exceptions.UniqueViolationError:
-        await Coin.update.values(
+        await sql_update_coin(
+            symbol=data['symbol'],
             price_usd=float(data['priceUsd']),
             avr_usd=float(data['vwap24Hr']),
-        ).where(Coin.symbol == data['symbol']).gino.status()
+        )
 
     return data['priceUsd']

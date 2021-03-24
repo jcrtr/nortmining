@@ -1,7 +1,7 @@
 from aiohttp import web
 
 from backend.middleware import auth_middleware, auth_middleware_graph
-from backend.models import db
+from .models import db
 
 from routes import init_routes
 
@@ -12,7 +12,6 @@ async def init_app():
     app = web.Application(middlewares=[
         db,
         # auth_middleware,
-        auth_middleware_graph,
     ])
     # db.init_app(app, dict(
     #     dsn=DB_DSN,))

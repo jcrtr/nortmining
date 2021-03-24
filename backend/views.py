@@ -1,6 +1,6 @@
 from backend.decorators import login_required
 from backend.models.eth import Coin
-from backend.utils.binance.main import main_binance
+from backend.utils.views import main_utils
 
 
 @login_required
@@ -12,4 +12,4 @@ async def coin_add(request):
 
 
 async def deposit(request, **kwargs):
-    await main_binance()
+    await main_utils()

@@ -1,4 +1,4 @@
-from backend.models.users import UserDeposit, UserPayments
+from ....models.users import UserDeposit, UserPayments
 
 
 async def sql_create_user_deposit(user_id, usd, eth, insert_time):

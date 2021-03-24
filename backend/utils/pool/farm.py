@@ -1,10 +1,10 @@
 import asyncpg
 import requests
+from ...config import URL_POOL, WALLET
+from ..user.sql.get import sql_get_user_id
 from .sql.create import sql_create_farm
 from .sql.get import sql_get_farm_name, sql_get_farm_user_farm_id, sql_get_farm_user_percent
 from .sql.update import sql_update_farm, sql_update_farm_user
-from ..user.sql.get import sql_get_user_id
-from ...config import URL_POOL, WALLET
 
 
 async def receive_farm():
@@ -35,6 +35,7 @@ async def sql_check(item_farm, reported):
         await sql_create_farm(item_farm, reported)
     except asyncpg.exceptions.UniqueViolationError:
         await sql_update_farm(item_farm, reported)
+        await update_user_hash(item_farm, reported)
 
 
 async def update_user_hash(item_farm, reported):

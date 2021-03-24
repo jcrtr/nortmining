@@ -1,4 +1,4 @@
-from backend.models.farm import Farm
+from ....models.farm import Farm
 
 
 async def sql_create_farm(item, reported):

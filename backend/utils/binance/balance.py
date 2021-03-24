@@ -5,7 +5,7 @@ import urllib
 import asyncpg
 import requests
 
-from backend.models.eth import BalanceWallet
+from ...models.eth import BalanceWallet
 from urllib.parse import urlparse
 
 

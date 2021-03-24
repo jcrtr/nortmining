@@ -6,8 +6,8 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 
 from aiohttp_graphql import GraphQLView
 
-from backend.graph.mutations.reviews import Mutation
-from backend.graph.query.farm import QueryFarm
+from .mutations.reviews import Mutation
+from .query.farm import QueryFarm
 
 
 class Query(

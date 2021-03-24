@@ -1,7 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
-from backend.config import JWT_EXP_DELTA_SECONDS, JWT_SECRET, JWT_ALGORITHM
-from backend.models.users import BlacklistToken
+from ..config import JWT_EXP_DELTA_SECONDS, JWT_SECRET, JWT_ALGORITHM
+from ..models.users import BlacklistToken
 
 
 async def encode_auth_token(user_id):

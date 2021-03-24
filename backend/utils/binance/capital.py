@@ -1,7 +1,7 @@
-from backend.utils.binance.connect import connect_binance
+from ...config import URL_DEPOSIT, URL_WITHDRAW
+from .connect import connect_binance
 from .utils import handler
-from backend.config import URL_DEPOSIT, URL_WITHDRAW
-from backend.utils.binance.sql.get import sql_get_wallet_deposit, sql_get_wallet_withdraw
+from .sql.get import sql_get_wallet_deposit, sql_get_wallet_withdraw
 
 
 async def deposit():
