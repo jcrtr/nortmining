@@ -1,0 +1,3 @@
+[submodule "CryptoDashboard"]
+	path = frontend
+	url = https://github.com/likiblack/CryptoDashboard.git
