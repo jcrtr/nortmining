@@ -1,7 +1,7 @@
 from aiohttp import web
 
 from backend.middleware import auth_middleware, auth_middleware_graph
-from .models import db
+from backend.models import db
 
 from routes import init_routes
 

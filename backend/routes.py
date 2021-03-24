@@ -1,7 +1,7 @@
 import aiohttp_cors
 
-from .graph.views import gql_view
-from .views import coin_add, deposit
+from backend.graph.views import gql_view
+from backend.views import coin_add, deposit
 
 
 def init_routes(app, cors):
