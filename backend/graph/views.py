@@ -7,11 +7,11 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 from aiohttp_graphql import GraphQLView
 
 from .mutations.reviews import Mutation
-from .query.farm import QueryFarm
+from .query.farm import QueryUserFarm
 
 
 class Query(
-    QueryFarm,
+    QueryUserFarm,
     graphene.ObjectType
 ):
     pass
