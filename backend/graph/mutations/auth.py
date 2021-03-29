@@ -15,7 +15,6 @@ class LoginUser(graphene.Mutation):
     async def mutate(root, info, input):
         try:
             user = await User.query.where(User.email == input.email).gino.first()
-            print(user)
             if not user:
                 return LoginUser(message='Not email')
 

@@ -1,26 +1,14 @@
 import graphene
 
-from .types import UserBalanceType
-from ...auth.token import decode_auth_token
-from ...models.users import UserBalance
+from .types import UserType
+from ...models.users import User
 
 
-class QueryUserFarm(graphene.ObjectType):
-    user_balance = graphene.List(UserBalanceType)
+class QueryUser(graphene.ObjectType):
+
+    user = graphene.Field(UserType)
 
     @staticmethod
-    async def resolve_farms(root, info):
-        auth_header = info.context.get('authorization')
-        if auth_header:
-            user_id = decode_auth_token(auth_header)
-            if not isinstance(user_id, str):
-                user_balance = await UserBalance\
-                    .query.where(UserBalance.user_id == user_id)\
-                    .gino.all()
-                return user_balance
-            else:
-                sys.tracebacklimit = -1
-                return Exception('Auth required')
-        else:
-            sys.tracebacklimit = -1
-            return Exception('Auth required')
+    async def resolve_me(root, info, user_id):
+        user = await User.query.where(User.user_id == user_id).gino.all()
+        return user

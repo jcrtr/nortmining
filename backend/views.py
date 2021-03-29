@@ -3,12 +3,8 @@ from backend.models.eth import Coin
 from backend.utils.views import main_utils
 
 
-@login_required
 async def coin_add(request):
-    await Coin.create(
-        name="ETH",
-        symbol="ETH"
-    )
+    print(request.headers)
 
 
 async def deposit(request, **kwargs):

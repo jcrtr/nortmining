@@ -1,6 +1,17 @@
 import graphene
 
 
+class UserType(graphene.ObjectType):
+
+    username = graphene.String()
+    phone = graphene.Int()
+    email = graphene.String()
+
+    first_name = graphene.String()
+    last_name = graphene.String()
+    about = graphene.String()
+
+
 class UserBalanceType(graphene.ObjectType):
 
     total_hash = graphene.Int()

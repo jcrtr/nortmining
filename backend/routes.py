@@ -1,6 +1,6 @@
 import aiohttp_cors
 
-from backend.graph.views import gql_view
+from backend.graph.views import gql_view, gqil_view
 from backend.views import coin_add, deposit
 
 
@@ -8,7 +8,7 @@ def init_routes(app, cors):
     app.router.add_get('/coin', deposit, name='coin'),
     app.router.add_get('/add', coin_add, name='coin_add'),
 
-    # app.router.add_route('*', '/graphiql', gqil_view, name='graphiql')
+    app.router.add_route('*', '/graphiql', gqil_view, name='graphiql')
 
     resource = cors.add(app.router.add_resource("/graphql"), {
         "*": aiohttp_cors.ResourceOptions(
