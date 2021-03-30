@@ -2,13 +2,8 @@ import asyncio
 import os
 from aiohttp import web
 from app import init_app
-
-
-try:
-    import uvloop
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-except ImportError:
-    print("Library uvloop is not available")
+# import uvloop
+# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def main():

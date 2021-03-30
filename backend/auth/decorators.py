@@ -1,29 +1,18 @@
-from functools import wraps
-import graphene
-
-from backend.auth.token import decode_auth_token
+from aiohttp import web
+from graphql import GraphQLError
 
 
-class MessageField(graphene.ObjectType):
-    message = graphene.String()
+def login_required(func):
+    async def wrapper(request):
+        if not request.user:
+            return web.json_response({'message': 'Auth required'}, status=401)
+        return func(request)
+    return wrapper
 
 
-def mutation_header_jwt_required(fn):
-    """
-    A decorator to protect a mutation.
-    If you decorate a mutation with this, it will ensure that the requester
-    has a valid access token before allowing the mutation to be called. This
-    does not check the freshness of the access token.
-    """
-
-    @wraps(fn)
-    def wrapper(self, info):
-        token = info.context['request'].headers.get('Authorization')
-        try:
-            user_id = decode_auth_token(token)
-        except Exception as e:
-            return MessageField(message=str(e))
-
-        return fn(user_id)
-
+def login_required_graph(func):
+    async def wrapper(root, info):
+        if not info.context['is_authenticated']:
+            return GraphQLError('Authorization error.')
+        return func(root, info)
     return wrapper

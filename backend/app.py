@@ -1,6 +1,4 @@
 from aiohttp import web
-
-from backend.middleware import auth_middleware, auth_middleware_graph
 from backend.models import db
 
 from routes import init_routes
@@ -26,9 +24,8 @@ async def on_start(app):
     app['db'] = await db.set_bind(
         "postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db",
     )
-    print('connect')
     await db.gino.create_all()
 
 
 async def on_shutdown(app):
-    await app['db'].pop_bind().close()
+    await db.pop_bind().close()

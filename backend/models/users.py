@@ -1,5 +1,6 @@
 import time
 from sqlalchemy.dialects.postgresql import UUID
+
 from . import db
 
 from .base import BaseModel
@@ -21,35 +22,13 @@ class User(db.Model):
     about = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.BigInteger, default=int(time.time()))
     commission = db.Column(db.Integer, default=10)
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        # salt = bcrypt.gensalt()
-        # self.password = bcrypt.hashpw(password, salt).decode()
-        self._wallets = set()
-        self._capacities = set()
-
-    @property
-    def wallets(self):
-        return self._wallets
-
-    @property
-    def capacities(self):
-        return self._capacities
-
-    @wallets.setter
-    def add_channel(self, wallet):
-        self._wallets.add(wallet)
-
-    @capacities.setter
-    def add_channel(self, capacity):
-        self._capacities.add(capacity)
+    is_admin = db.Column(db.Boolean, default=False)
 
 
 class Wallet(BaseModel):
     __tablename__ = 'wallet'
 
-    user_id = db.Column(db.ForeignKey('user.id'))
+    user_id = db.Column(db.ForeignKey('user.id'), unique=True)
     coin_symbol = db.Column(db.ForeignKey('coin.symbol'))
     address = db.Column(db.String(100), unique=True)
 
@@ -57,7 +36,7 @@ class Wallet(BaseModel):
 class UserBalance(BaseModel):
     __tablename__ = 'user_wallet'
 
-    user_id = db.Column(db.ForeignKey('user.id'))
+    user_id = db.Column(db.ForeignKey('user.id'), unique=True)
     total_usd = db.Column(db.BigInteger)
     total_eth = db.Column(db.Numeric(12, 6))
     date_update = db.Column(db.BigInteger, default=int(time.time()))
@@ -66,7 +45,7 @@ class UserBalance(BaseModel):
 class UserHash(BaseModel):
     __tablename__ = 'user_hash'
 
-    user_id = db.Column(db.ForeignKey('user.id'))
+    user_id = db.Column(db.ForeignKey('user.id'), unique=True)
     total_hash = db.Column(db.Numeric(12, 2))
     percent_hash = db.Column(db.BigInteger)
     date_update = db.Column(db.BigInteger, default=int(time.time()))

@@ -1,4 +1,6 @@
 import graphene
+
+from backend.auth.decorators import login_required_graph
 from backend.models.users import User, BlacklistToken
 from backend.graph.mutations.types import SignUpInput, LoginInput
 from backend.auth.token import encode_auth_token, decode_auth_token
@@ -20,10 +22,7 @@ class LoginUser(graphene.Mutation):
 
             if user.password != input.password:
                 return LoginUser(message='Invalid email or password')
-
             auth_token = await encode_auth_token(user_id=user.id)
-            print(auth_token)
-            # jwt_token = auth_token.decode()
             return LoginUser(
                 message='Successfully logged in.',
                 token=auth_token
@@ -37,24 +36,14 @@ class LogoutUser(graphene.Mutation):
     token = graphene.String()
 
     @staticmethod
+    @login_required_graph
     async def mutate(root, info):
-        auth_header = info.context.get('authorization')
-        if auth_header:
-            resp = decode_auth_token(auth_header)
-            if not isinstance(resp, str):
-                try:
-                    await BlacklistToken.create(token=auth_header)
-                    return LogoutUser(message='Successfully logged out.')
-                except Exception as e:
-                    return LogoutUser(message=e)
-            else:
-                return LogoutUser(
-                    message=resp,
-                )
-        else:
-            return LogoutUser(
-                message='Provide a valid auth token.',
-            )
+        auth_header = info.context['request'].headers.get('Authorization')
+        try:
+            await BlacklistToken.create(token=auth_header)
+            return LogoutUser(message='Successfully logged out.')
+        except Exception:
+            return LogoutUser(message='Some error occurred. Please try again.')
 
 
 class CreateUser(graphene.Mutation):
@@ -71,9 +60,7 @@ class CreateUser(graphene.Mutation):
             try:
                 await User.create(email=input.email, password=input.password)
                 return CreateUser(message='Successfully registered.')
-
             except Exception:
                 return CreateUser(message='Some error occurred. Please try again.')
-
         else:
             return CreateUser(message='User already exists. Please Log in.')
