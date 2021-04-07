@@ -27,15 +27,18 @@ async def auth_middleware(app, handler):
 
 class AuthorizationMiddleware(object):
     async def resolve(self, next, root, info, **args):
-        auth_header = info.context['request'].headers.get('Authorization')
+        # auth_header = info.context['request'].headers.get('accessToken')
+        auth_header = info.context['request'].cookies.get('accessToken')
+        print(auth_header)
         if auth_header is not None:
             try:
                 payload = await decode_auth_token(auth_header)
                 is_blacklisted_token = await check_blacklist(auth_header)
                 if is_blacklisted_token:
-                    return GraphQLError('Token blacklisted. Please log in again.')
+                    pass
+                    # return GraphQLError('Token blacklisted. Please log in again.')
                 else:
-                    info.context['user'] = payload
+                    info.context['user'] = payload['sub']
                     info.context['is_authenticated'] = True
             except jwt.ExpiredSignatureError as e:
                 return GraphQLError('Signature expired. Please log in again.')

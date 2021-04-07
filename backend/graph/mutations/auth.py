@@ -1,7 +1,10 @@
+import aiohttp
 import graphene
+from graphql import GraphQLError
 
 from backend.auth.decorators import login_required_graph
-from backend.models.users import User, BlacklistToken
+from backend.models.auth import BlacklistToken, RefreshSession
+from backend.models.users import User
 from backend.graph.mutations.types import SignUpInput, LoginInput
 from backend.auth.token import encode_auth_token, decode_auth_token
 
@@ -10,48 +13,94 @@ class LoginUser(graphene.Mutation):
     class Arguments:
         input = LoginInput(required=True)
 
-    message = graphene.String()
-    token = graphene.String()
+    access_token = graphene.String()
 
     @staticmethod
     async def mutate(root, info, input):
         try:
             user = await User.query.where(User.email == input.email).gino.first()
+            fp = input.fp
+
             if not user:
-                return LoginUser(message='Not email')
+                return GraphQLError(message='Invalid email or password')
 
             if user.password != input.password:
-                return LoginUser(message='Invalid email or password')
-            auth_token = await encode_auth_token(user_id=user.id)
-            return LoginUser(
-                message='Successfully logged in.',
-                token=auth_token
+                return GraphQLError(message='Invalid email or password')
+
+            refresh_token = await RefreshSession.create(
+                user_id=user.id,
+                fingerprint=fp
             )
+
+            access_token = await encode_auth_token(
+                user_id=user.id,
+                refresh_token=str(refresh_token.id)
+            )
+
+            print(refresh_token)
+            return LoginUser(
+                access_token=access_token,
+            )
+
         except Exception:
-            return LoginUser(message='Try again')
+            return GraphQLError(message='Try again')
 
 
-class LogoutUser(graphene.Mutation):
-    message = graphene.String()
-    token = graphene.String()
+class LoginUserRefresh(graphene.Mutation):
+    access_token = graphene.String()
 
     @staticmethod
     @login_required_graph
     async def mutate(root, info):
-        auth_header = info.context['request'].headers.get('Authorization')
+        user_id = info.context['user']
+        access_token = info.context['request'].cookies.get('accessToken')
+        fingerprint = info.context['request'].headers.get('personalization_id')
+
+        payload = await decode_auth_token(access_token)
+        refresh_token = payload['jti']
+
+        check_session = await RefreshSession.query.where(
+            RefreshSession.id == refresh_token and
+            RefreshSession.user_id == user_id and
+            RefreshSession.fingerprint == fingerprint
+        ).gino.all()
+
+        if not check_session:
+            return GraphQLError(message='Errors')
+
         try:
-            await BlacklistToken.create(token=auth_header)
-            return LogoutUser(message='Successfully logged out.')
+            access_token = await encode_auth_token(user_id=user_id, refresh_token=refresh_token)
+            return LoginUserRefresh(access_token=access_token)
         except Exception:
-            return LogoutUser(message='Some error occurred. Please try again.')
+            return GraphQLError(message='Errors')
 
 
-class CreateUser(graphene.Mutation):
+class LogoutUser(graphene.Mutation):
+    message = graphene.String()
+
+    @staticmethod
+    # @login_required_graph
+    async def mutate(root, info):
+        access_token = info.context['request'].cookies.get('accessToken')
+        payload = await decode_auth_token(access_token)
+        refresh_token = payload['jti']
+
+        if access_token is not None:
+            print(access_token)
+            print(refresh_token)
+            try:
+                await BlacklistToken.create(token=access_token)
+                await RefreshSession.delete.where(RefreshSession.id == refresh_token).gino.status()
+                return LogoutUser(message='Successfully logged out.')
+            except Exception:
+                return GraphQLError(message='Some error occurred. Please try again.')
+
+
+class RegisterUser(graphene.Mutation):
     class Arguments:
         input = SignUpInput(required=True)
 
     message = graphene.String()
-    token = graphene.String()
 
     @staticmethod
     async def mutate(root, info, input):
@@ -59,8 +108,17 @@ class CreateUser(graphene.Mutation):
         if not user:
             try:
                 await User.create(email=input.email, password=input.password)
-                return CreateUser(message='Successfully registered.')
+                return RegisterUser(message='Successfully registered.')
             except Exception:
-                return CreateUser(message='Some error occurred. Please try again.')
+                return GraphQLError(message='Some error occurred. Please try again.')
         else:
-            return CreateUser(message='User already exists. Please Log in.')
+            return GraphQLError(message='User already exists. Please Log in.')
+
+
+class CheckToken(graphene.Mutation):
+    message = graphene.String()
+
+    @staticmethod
+    @login_required_graph
+    async def mutate(root, info):
+        return CheckToken(message='ok')

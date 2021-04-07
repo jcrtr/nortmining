@@ -4,13 +4,15 @@ from graphql import GraphQLError
 
 from ..config import JWT_EXP_DELTA_SECONDS, JWT_SECRET, JWT_ALGORITHM
 from ..models import db
-from ..models.users import BlacklistToken, User
+from ..models.auth import BlacklistToken, RefreshSession
+from ..models.users import User
 
 
-async def encode_auth_token(user_id):
+async def encode_auth_token(user_id, refresh_token):
     try:
         payload = {
             'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS),
+            'jti': refresh_token,
             'iat': datetime.utcnow(),
             'sub': str(user_id)
         }
@@ -29,7 +31,7 @@ async def decode_auth_token(auth_token):
     async with db.acquire(reuse=False):
         res = await User.select('id').where(User.id == user_id).gino.first()
         if res:
-            return payload['sub']
+            return payload
         else:
             await BlacklistToken.create(token=auth_token)
             return GraphQLError('Error Token. Token add blacklisted.')
@@ -40,3 +42,7 @@ async def check_blacklist(auth_token):
         res = await BlacklistToken.query.where(BlacklistToken.token == auth_token).gino.first()
     return res
 
+
+# async def add_refresh_sessions(user_id, access_token, fingerprint):
+#     async with db.acquire(reuse=False):
+#

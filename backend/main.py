@@ -3,7 +3,7 @@ import os
 from aiohttp import web
 from app import init_app
 # import uvloop
-# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+# # asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def main():
