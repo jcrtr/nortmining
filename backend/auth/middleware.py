@@ -1,6 +1,7 @@
 import json
 import jwt
 from aiohttp import web
+from aiohttp_session import get_session
 from graphql import GraphQLError
 
 from backend.auth.token import check_blacklist, decode_auth_token
@@ -22,13 +23,19 @@ async def auth_middleware(app, handler):
 
             request.user = await User.get(payload['user_id'])
         return await handler(request)
+
     return middleware
 
 
 class AuthorizationMiddleware(object):
     async def resolve(self, next, root, info, **args):
         # auth_header = info.context['request'].headers.get('accessToken')
-        auth_header = info.context['request'].cookies.get('accessToken')
+        request = info.context['request']
+        auth_header = request.cookies.get('accessToken')
+
+        session = await get_session(request)
+        print(session['user_id'])
+
         print(auth_header)
         if auth_header is not None:
             try:
@@ -47,3 +54,27 @@ class AuthorizationMiddleware(object):
         else:
             info.context['is_authenticated'] = False
         return next(root, info, **args)
+
+
+class SessionMiddleware(object):
+    async def resolve(self, next, root, info, **args):
+        request = info.context['request']
+        context = info.context
+        session = await get_session(request)
+        print(f"Mid: {session}")
+        if session is not None:
+            try:
+                if 'user_id' and 'device_id' not in session:
+                    return GraphQLError('Signature expired. Please log in again.')
+
+                context['is_authenticated'] = True
+                context['user'] = session['user_id']
+                context['device_id'] = session['device_id']
+
+            except Exception:
+                context['is_authenticated'] = False
+                return GraphQLError('Signature expired. Please log in again.')
+        else:
+            context['is_authenticated'] = False
+        return next(root, info, **args)
+

@@ -47,30 +47,34 @@ class LoginUser(graphene.Mutation):
 
 
 class LoginUserRefresh(graphene.Mutation):
-    access_token = graphene.String()
+    message = graphene.String()
 
     @staticmethod
     @login_required_graph
     async def mutate(root, info):
         user_id = info.context['user']
-        access_token = info.context['request'].cookies.get('accessToken')
-        fingerprint = info.context['request'].headers.get('personalization_id')
-
-        payload = await decode_auth_token(access_token)
-        refresh_token = payload['jti']
-
-        check_session = await RefreshSession.query.where(
-            RefreshSession.id == refresh_token and
-            RefreshSession.user_id == user_id and
-            RefreshSession.fingerprint == fingerprint
-        ).gino.all()
-
-        if not check_session:
-            return GraphQLError(message='Errors')
+        device_id = info.context['device_id']
+        # access_token = info.context['request'].cookies.get('accessToken')
+        # fingerprint = info.context['request'].headers.get('personalization_id')
+        # payload = await decode_auth_token(access_token)
+        # refresh_token = payload['jti']
+        # check_session = await RefreshSession.query.where(
+        #     RefreshSession.id == refresh_token and
+        #     RefreshSession.user_id == user_id and
+        #     RefreshSession.fingerprint == fingerprint
+        # ).gino.all()
+        # if not check_session:
+        #     return GraphQLError(message='Errors')
 
         try:
-            access_token = await encode_auth_token(user_id=user_id, refresh_token=refresh_token)
-            return LoginUserRefresh(access_token=access_token)
+            # access_token = await encode_auth_token(user_id=user_id, refresh_token=refresh_token)
+            user = await User.query.where(User.id == user_id).gino.first()
+
+            if not user:
+                return GraphQLError(message='Errors')
+
+            return LoginUserRefresh(message='ok')
+
         except Exception:
             return GraphQLError(message='Errors')
 

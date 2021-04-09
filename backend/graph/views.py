@@ -4,7 +4,7 @@ import asyncio
 from aiohttp import web
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from aiohttp_graphql import GraphQLView
-from ..auth.middleware import AuthorizationMiddleware
+from ..auth.middleware import SessionMiddleware
 from .mutations.reviews import Mutation
 from .query.farm import QueryUserFarm
 from .query.user import QueryUser, QueryUserBalance, QueryUserHash, QueryUserDeposit, QueryUserPayments
@@ -39,7 +39,7 @@ gql_view = GraphQLView(
     schema=schema,
     executor=AsyncioExecutor(loop=asyncio.get_event_loop()),
     middleware=[
-        AuthorizationMiddleware(),
+        SessionMiddleware(),
     ],
     graphiql=False,
     batch=True,

@@ -1,14 +1,33 @@
-from backend.models.users import UserBalance
-from backend.utils.views import main_utils
+from aiohttp import web
+from aiohttp_session import new_session, get_session
+from backend.models.users import User
 
 
-async def coin_add(request):
-    await UserBalance.create(
-        user_id='3e5d8d13-30f3-4be7-ab9a-2d4350f72111',
-        total_usd=123123,
-        total_eth=0.222,
-    )
+async def login(request):
+    data = await request.json()
+    device_id = request.headers.get('device_id')
 
+    try:
+        user = await User.query.where(User.email == data['email']).gino.first()
 
-async def deposit(request, **kwargs):
-    await main_utils()
+        if not user:
+            return web.json_response({'message': 'Invalid email or password'}, status=400)
+
+        if user.password != data['password']:
+            return web.json_response({'message': 'Invalid email or password'}, status=400)
+
+        session = await new_session(request)
+        session['user_id'] = str(user.id)
+        session['device_id'] = str(device_id)
+
+        print(f'new session: {session}')
+        return web.Response(text='ok', status=200)
+
+    except Exception:
+        return web.json_response({'message': 'Invalid email or password'}, status=400)
+
+async def sing_out(request):
+    session = await get_session(request)
+    session.invalidate()
+    print(f'logout:{session}')
+    return web.Response(text='ok', status=200)
