@@ -4,7 +4,7 @@ from ...config import URL_POOL, WALLET
 from ..user.sql.get import sql_get_user_id
 from .sql.create import sql_create_farm
 from .sql.get import sql_get_farm_name, sql_get_farm_user_farm_id, sql_get_farm_user_percent
-from .sql.update import sql_update_farm, sql_update_farm_user
+from .sql.update import sql_update_farm, sql_update_user_farm
 
 
 async def receive_farm():
@@ -15,7 +15,6 @@ async def receive_farm():
 
     while True:
         if len(farm) == 0:
-            print('end')
             break
         else:
             item_farm = farm[0]
@@ -43,7 +42,6 @@ async def update_user_hash(item_farm, reported):
 
     while True:
         if len(users) == 0:
-            print('end')
             break
         else:
             user_id = users[0]
@@ -60,6 +58,6 @@ async def update_user_hash(item_farm, reported):
                     else:
                         reported = reported * (percent / 100)
 
-                    await sql_update_farm_user(reported, user_id, item_farm)
+                    await sql_update_user_farm(reported, user_id, item_farm)
 
             users.remove(f'{user_id}')

@@ -24,7 +24,7 @@ async def sql_get_farm_user_farm_id(user_id):
 async def sql_get_farm_user_percent(user_id, item_farm):
     result_db = await FarmUser. \
         select('percent'). \
-        where(FarmUser.user_id == user_id, FarmUser.farm_id == item_farm) \
+        where(FarmUser.user_id == user_id and FarmUser.farm_id == item_farm) \
         .gino.all()
     result = [result.percent for result in result_db][0]
     return result

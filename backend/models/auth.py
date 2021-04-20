@@ -1,8 +1,8 @@
 import time
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
-from . import db
-from .users import User
+from backend.models.db import db
+from backend.models.users import User
 
 
 class BlacklistToken(db.Model):

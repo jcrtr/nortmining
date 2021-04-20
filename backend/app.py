@@ -1,11 +1,16 @@
 from aiohttp import web
-import aioredis
-import aiohttp_cors
 
-from aiohttp_session.redis_storage import RedisStorage
-from backend.models import db
-from routes import init_routes
+import asyncio
+import aiohttp_cors
 from aiohttp_session import setup
+import aioredis
+from aiohttp_session.redis_storage import RedisStorage
+
+from backend.models.db import db
+from backend.utils.views import main_utils
+from routes import init_routes
+
+loop = asyncio.get_event_loop()
 
 
 async def make_redis_pool():
@@ -21,10 +26,7 @@ async def init_app():
         redis_pool.close()
         await redis_pool.wait_closed()
 
-    app = web.Application(
-        middlewares=[
-            db,
-        ])
+    app = web.Application(middlewares=[db])
 
     cors = aiohttp_cors.setup(app, defaults={
         "*": aiohttp_cors.ResourceOptions(
@@ -36,20 +38,25 @@ async def init_app():
 
     init_routes(app, cors)
     setup(app, storage)
+    db.init_app(app, dict(dsn="postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db"))
 
     app.on_startup.append(on_start)
-    app.on_cleanup.append(on_shutdown)
+    # app.on_cleanup.append(on_shutdown)
     app.on_cleanup.append(dispose_redis_pool)
 
     return app
 
 
 async def on_start(app):
-    app['db'] = await db.set_bind(
-        "postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db",
-    )
-    print('connect db')
+    # await db.set_bind(
+    #     "postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db",
+    # )
+    print('create db')
     await db.gino.create_all()
+    try:
+        loop.create_task(main_utils())
+    except asyncio.CancelledError:
+        pass
 
 
 async def on_shutdown(app):

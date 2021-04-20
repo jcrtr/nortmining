@@ -1,13 +1,13 @@
 from .base import BaseModel
-from . import db
+from backend.models.db import db
 
 
 class Farm(BaseModel):
     __tablename__ = 'farm'
 
     name = db.Column(db.String(50), unique=True)
-    reported = db.Column(db.Float)
-    consumption = db.Column(db.Float)
+    reported = db.Column(db.Float, default=0)
+    consumption = db.Column(db.Float, default=100)
 
 
 class FarmUser(BaseModel):

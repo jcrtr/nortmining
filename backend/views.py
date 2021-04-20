@@ -1,6 +1,7 @@
 from aiohttp import web
 from aiohttp_session import new_session, get_session
 from backend.models.users import User
+from backend.utils.views import main_utils
 
 
 async def login(request):
@@ -24,10 +25,16 @@ async def login(request):
         return web.Response(text='ok', status=200)
 
     except Exception:
-        return web.json_response({'message': 'Invalid email or password'}, status=400)
+        return web.json_response({'message': 'Error'}, status=400)
+
 
 async def sing_out(request):
     session = await get_session(request)
     session.invalidate()
     print(f'logout:{session}')
     return web.Response(text='ok', status=200)
+
+
+async def get_update(request):
+    await main_utils()
+    pass

@@ -1,5 +1,5 @@
 from datetime import datetime
-from . import db
+from backend.models.db import db
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import time

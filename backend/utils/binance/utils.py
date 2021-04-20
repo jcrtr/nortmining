@@ -9,36 +9,60 @@ async def handler(operate, data, db_data):
     1 = Deposit
     2 = Withdraw
     """
-    item_num = len(db_data) - 1
+    num = len(data)
+    item_num = 0
     if len(db_data) == 0:
-        if operate == 1:
-            await sql_create_wallet_deposit_all(data)
-        else:
-            await sql_create_wallet_withdraw(data)
+        pass
+        # if operate == 1:
+        #     await sql_create_wallet_deposit_all(data)
+        # else:
+        #     await sql_create_wallet_withdraw(data)
     else:
         while True:
-            if len(db_data) == 0:
+            if item_num >= num:
                 break
             else:
                 if operate == 1:
                     item = data[item_num]['insertTime']
+                    if item in db_data:
+                        db_data.remove(item)
+                        item_num += 1
+                    else:
+                        await sql_create_wallet_deposit(data[item_num])
+                        await user_balance_update(operate, data[item_num])
+                        item_num += 1
                 else:
                     item = data[item_num]['id']
-                if item in db_data:
-                    item_num -= 1
-                    if operate == 1:
-                        db_data.remove(item)
-                    else:
+                    if item in db_data:
                         db_data.remove(f'{item}')
-                else:
-                    print('create')
-                    if operate == 1:
-                        await sql_create_wallet_deposit(data[item_num])
+                        item_num += 1
                     else:
+                        print('create')
                         await sql_create_wallet_withdraw(data[item_num])
+                        await user_balance_update(operate, data[item_num])
+                        item_num += 1
+            # item_num -= 1
 
-                    await user_balance_update(operate, data[item_num])
-                    item_num -= 1
+    # else:
+    #     item = data[item_num]['id']
+    # if item in db_data:
+    #     item_num -= 1
+    #     if operate == 1:
+    #
+    #     else:
+    #         print(f'Withdraw: {item}')
+    #         db_data.remove(f'{item}')
+    # else:
+    #     print('esle')
+    #     if operate == 1:
+    #         print(f'Create Deposit: {item}')
+    #         # await sql_create_wallet_deposit(data[item_num])
+    #     else:
+    #         print(f'Create Withdraw: {item}')
+    #         await sql_create_wallet_withdraw(data[item_num])
+    #
+    #     await user_balance_update(operate, data[item_num])
+    #     item_num -= 1
 
 
 async def user_balance_update(operate, data):
@@ -50,6 +74,7 @@ async def user_balance_update(operate, data):
             break
         else:
             user_id = user_all[0]
+
             if operate == 1:
                 time = int(data['insertTime'])
                 await update_balance(
@@ -61,9 +86,11 @@ async def user_balance_update(operate, data):
             else:
                 address = str(data['address'])
                 wallet = await sql_get_wallet(user_id)
-
-                if address in wallet:
+                print(f'{wallet} wallet')
+                print(address)
+                if address == wallet:
                     time = int(data['applyTime'])
+                    print('ok')
                     await update_balance(
                         operate=operate,
                         user_id=user_id,

@@ -4,20 +4,30 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import BaseModel
-from . import db
+from .db import db
 
 
-class BalanceWallet(BaseModel):
-    __tablename__ = 'balance'
+class Coin(BaseModel):
+    __tablename__ = 'coin'
 
-    coin_symbol = db.Column(db.ForeignKey('coin.symbol'))
-    balance = db.Column(db.BigInteger)
+    name = db.Column(db.String(50))
+    symbol = db.Column(db.String(50), unique=True)
+    price_usd = db.Column(db.BigInteger)
+    avr_usd = db.Column(db.BigInteger)
+
+
+class Estimated(db.Model):
+    __tablename__ = 'estimated'
+
+    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
+    eth = db.Column(db.Numeric(12, 6), default=0)
+    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
 
 class WalletDeposit(db.Model):
     __tablename__ = 'wallet_deposit'
 
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     amount = db.Column(db.String(50))
     coin = db.Column(db.String(50))
     status = db.Column(db.Boolean, default=False)
@@ -37,14 +47,3 @@ class WalletWithdraw(db.Model):
     applyTime = db.Column(db.String(50))
     date_created = db.Column(db.BigInteger, default=int(time.time()))
     is_binance = db.Column(db.Boolean, default=True)
-
-
-class Coin(BaseModel):
-    __tablename__ = 'coin'
-
-    name = db.Column(db.String(50))
-    symbol = db.Column(db.String(50), unique=True)
-    price_usd = db.Column(db.BigInteger)
-    avr_usd = db.Column(db.BigInteger)
-
-
