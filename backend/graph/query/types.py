@@ -13,7 +13,7 @@ class UserType(graphene.ObjectType):
     investing = graphene.Int()
     total_earned = graphene.Int()
 
-    estimated = graphene.Int()
+    estimated = graphene.Float()
 
     usd = graphene.String()
     eth = graphene.Float()
@@ -25,9 +25,14 @@ class UserType(graphene.ObjectType):
 class UserTransactionType(graphene.ObjectType):
     usd = graphene.Int()
     eth = graphene.Float()
-    time = graphene.Int()
+    time = graphene.String()
     deposit = graphene.Boolean()
     is_binance = graphene.Boolean()
+
+
+class UserWalletType(graphene.ObjectType):
+    coin_symbol = graphene.String()
+    address = graphene.String()
 
 
 class FarmType(graphene.ObjectType):

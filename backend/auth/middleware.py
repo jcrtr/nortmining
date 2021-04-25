@@ -34,9 +34,6 @@ class AuthorizationMiddleware(object):
         auth_header = request.cookies.get('accessToken')
 
         session = await get_session(request)
-        print(session['user_id'])
-
-        print(auth_header)
         if auth_header is not None:
             try:
                 payload = await decode_auth_token(auth_header)
@@ -61,7 +58,6 @@ class SessionMiddleware(object):
         request = info.context['request']
         context = info.context
         session = await get_session(request)
-        print(f"Mid: {session}")
         if session is not None:
             try:
                 if 'user_id' and 'device_id' not in session:

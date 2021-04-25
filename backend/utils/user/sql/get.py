@@ -48,5 +48,5 @@ async def sql_get_total_earned(user_id):
 async def sql_get_wallet(user_id):
     result_db = await UserWallet.select('address') \
         .where(UserWallet.user_id == user_id).gino.all()
-    result = [wallet.address for wallet in result_db][0]
+    result = [wallet.address for wallet in result_db]
     return result

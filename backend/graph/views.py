@@ -5,12 +5,12 @@ from aiohttp_graphql import GraphQLView
 
 from ..auth.middleware import SessionMiddleware
 from .mutations.reviews import Mutation
-from .query.farm import QueryUserFarm
-from .query.user import QueryUser, QueryUserTransaction
+from .query.user import QueryUser, QueryUserWallet, QueryUserTransaction, QueryUserFarm
 
 
-class QueryUser(
+class Query(
     QueryUser,
+    QueryUserWallet,
     QueryUserTransaction,
     QueryUserFarm,
     graphene.ObjectType
@@ -26,7 +26,7 @@ class Mutations(
 
 
 schema = graphene.Schema(
-    query=QueryUser,
+    query=Query,
     mutation=Mutations
 )
 

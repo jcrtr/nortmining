@@ -39,7 +39,7 @@ class User(db.Model):
 class UserWallet(BaseModel):
     __tablename__ = 'user_wallet'
 
-    user_id = db.Column(db.ForeignKey('user.id'), unique=True)
+    user_id = db.Column(db.ForeignKey('user.id'))
     coin_symbol = db.Column(db.ForeignKey('coin.symbol'))
     address = db.Column(db.String(100), unique=True)
 
