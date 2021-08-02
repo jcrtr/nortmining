@@ -1,63 +1,51 @@
 from aiohttp import web
 
 import asyncio
-import aiohttp_cors
-from aiohttp_session import setup
+from aiohttp_session import setup, session_middleware
 import aioredis
 from aiohttp_session.redis_storage import RedisStorage
 
-from backend.models.db import db
+from backend.config import DB_DSN
+from backend.db import metadata
+from backend.middleware import request_user_middleware
 from backend.utils.views import main_utils
 from routes import init_routes
-
-loop = asyncio.get_event_loop()
+import aiohttp_sqlalchemy as ahsa
 
 
 async def make_redis_pool():
-    redis_address = ('127.0.0.1', '6379')
-    return await aioredis.create_redis_pool(redis_address, timeout=1)
+    return await aioredis.create_redis_pool(
+        address="redis://127.0.0.1",
+        # db=REDIS_DB,
+        # password=REDIS_PASS,
+        # maxsize=int(REDIS_POOL_SIZE) or 10,
+        # timeout=int(REDIS_TIMEOUT) or 60,
+        encoding='utf-8',
+    )
 
 
 async def init_app():
+    middlewares = [request_user_middleware]
+    app = web.Application(middlewares=middlewares)
     redis_pool = await make_redis_pool()
-    storage = RedisStorage(redis_pool, cookie_name="NORT_MINING")
+    storage = RedisStorage(redis_pool, cookie_name="SESSION")
 
-    async def dispose_redis_pool(app):
-        redis_pool.close()
-        await redis_pool.wait_closed()
-
-    app = web.Application(middlewares=[db])
-
-    cors = aiohttp_cors.setup(app, defaults={
-        "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-        )
-    })
-
-    init_routes(app, cors)
+    init_routes(app)
     setup(app, storage)
-    db.init_app(app, dict(dsn="postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db"))
-
     app.on_startup.append(on_start)
-    # app.on_cleanup.append(on_shutdown)
-    app.on_cleanup.append(dispose_redis_pool)
+    app.on_cleanup.append(on_shutdown)
 
     return app
 
 
 async def on_start(app):
-    # await db.set_bind(
-    #     "postgresql+asyncpg://db_user:Cnfhbr09@localhost/miner_db",
-    # )
-    print('create db')
-    await db.gino.create_all()
-    try:
-        loop.create_task(main_utils())
-    except asyncio.CancelledError:
-        pass
+    ahsa.setup(app, [
+        ahsa.bind(f'{DB_DSN}'),
+    ])
+    await ahsa.init_db(app, metadata)
 
 
 async def on_shutdown(app):
-    await db.pop_bind().close()
+    redis_session = await make_redis_pool()
+    redis_session.close()
+    await redis_session.wait_closed()

@@ -3,7 +3,7 @@ import asyncio
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from aiohttp_graphql import GraphQLView
 
-from ..auth.middleware import SessionMiddleware
+from backend.utils.middleware import SessionMiddleware
 from .mutations.reviews import Mutation
 from .query.user import QueryUser, QueryUserWallet, QueryUserTransaction, QueryUserFarm
 

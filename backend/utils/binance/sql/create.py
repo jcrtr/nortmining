@@ -1,4 +1,4 @@
-from ....models.eth import WalletDeposit, WalletWithdraw
+from backend.wallet.eth import WalletDeposit, WalletWithdraw
 
 
 async def sql_create_wallet_deposit_all(data):

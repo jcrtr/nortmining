@@ -1,8 +1,8 @@
 import graphene
 
-from ...auth.decorators import login_required_graph
-from ...models.farm import FarmUser
-from ...models.users import User, UserTransactions, UserWallet
+from backend.utils.decorators import login_required_graph
+from backend.farm.models import FarmUser
+from backend.user.models import User, UserTransactions, UserWallet
 from ..query.types import UserType, UserTransactionType, UserWalletType, FarmType
 
 

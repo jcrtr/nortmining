@@ -4,8 +4,8 @@ from graphql import GraphQLError
 
 from ..config import JWT_EXP_DELTA_SECONDS, JWT_SECRET, JWT_ALGORITHM
 from ..models import db
-from ..models.auth import BlacklistToken, RefreshSession
-from ..models.users import User
+from backend.auth.models import BlacklistToken
+from backend.user.models import User
 
 
 async def encode_auth_token(user_id, refresh_token):

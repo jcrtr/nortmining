@@ -1,5 +1,5 @@
-from ....models.farm import Farm, FarmUser
-from ....models.users import User
+from backend.farm.models import Farm, FarmUser
+from backend.user.models import User
 
 
 async def sql_update_farm(item, reported):

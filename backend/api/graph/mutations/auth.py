@@ -1,11 +1,10 @@
-import aiohttp
 import graphene
 from graphql import GraphQLError
 
-from backend.auth.decorators import login_required_graph
-from backend.models.auth import BlacklistToken, RefreshSession
-from backend.models.users import User
-from backend.graph.mutations.types import SignUpInput, LoginInput
+from backend.utils.decorators import login_required_graph
+from backend.auth.models import BlacklistToken, RefreshSession
+from backend.user.models import User
+from backend.api.graph.mutations.types import SignUpInput, LoginInput
 from backend.auth.token import encode_auth_token, decode_auth_token
 
 

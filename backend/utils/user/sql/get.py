@@ -1,4 +1,4 @@
-from ....models.users import User, UserWallet
+from backend.user.models import User, UserWallet
 
 
 async def sql_get_user_id():

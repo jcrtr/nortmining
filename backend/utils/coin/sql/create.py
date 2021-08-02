@@ -1,4 +1,4 @@
-from ....models.eth import Coin
+from backend.wallet.eth import Coin
 
 
 async def sql_create_coin(name, symbol, price_usd, avr_usd):

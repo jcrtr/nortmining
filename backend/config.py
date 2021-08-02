@@ -2,11 +2,11 @@ from sqlalchemy.engine.url import URL
 
 DB_DSN = URL(
     drivername='postgresql+asyncpg',
-    username='db_user',
-    password='Cnfhbr09',
+    username='user_db',
+    password='password',
     host='localhost',
     port=5432,
-    database='miner_db',
+    database='test_db',
 )
 
 JWT_SECRET = 'likiblack'

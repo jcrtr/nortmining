@@ -1,7 +1,7 @@
 import graphene
 
 from .types import FarmInput
-from ...models.farm import Farm
+from backend.farm.models import Farm
 
 
 class CreateFarm(graphene.Mutation):

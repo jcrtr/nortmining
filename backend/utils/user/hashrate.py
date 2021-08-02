@@ -1,7 +1,7 @@
 import time
 
-from ...models.farm import FarmUser
-from ...models.users import User
+from backend.farm.models import FarmUser
+from backend.user.models import User
 from ..pool.sql.get import sql_get_farm_total_hash
 from ..user.sql.get import sql_get_user_id
 

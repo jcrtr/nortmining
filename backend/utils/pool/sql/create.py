@@ -1,5 +1,5 @@
-from ....models.eth import Estimated
-from ....models.farm import Farm
+from backend.wallet.eth import Estimated
+from backend.farm.models import Farm
 
 
 async def sql_create_farm(item, reported):

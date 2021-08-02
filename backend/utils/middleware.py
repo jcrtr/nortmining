@@ -1,4 +1,3 @@
-import json
 import jwt
 from aiohttp import web
 from aiohttp_session import get_session
@@ -6,7 +5,7 @@ from graphql import GraphQLError
 
 from backend.auth.token import check_blacklist, decode_auth_token
 from backend.config import JWT_SECRET, JWT_ALGORITHM
-from backend.models.users import User
+from backend.user.models import User
 
 
 async def auth_middleware(app, handler):

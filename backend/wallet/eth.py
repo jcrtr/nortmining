@@ -1,10 +1,5 @@
-import time
-import uuid
-
-from sqlalchemy.dialects.postgresql import UUID
-
-from .base import BaseModel
-from .db import db
+import sqlalchemy as db
+from backend.db import BaseModel
 
 
 class Coin(BaseModel):
@@ -16,34 +11,29 @@ class Coin(BaseModel):
     avr_usd = db.Column(db.BigInteger)
 
 
-class Estimated(db.Model):
+class Estimated(BaseModel):
     __tablename__ = 'estimated'
 
-    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     eth = db.Column(db.Numeric(12, 6), default=0)
-    date_created = db.Column(db.BigInteger, default=int(time.time()))
 
 
-class WalletDeposit(db.Model):
+class WalletDeposit(BaseModel):
     __tablename__ = 'wallet_deposit'
 
-    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     amount = db.Column(db.String(50))
     coin = db.Column(db.String(50))
     status = db.Column(db.Boolean, default=False)
     address = db.Column(db.String(100))
     insertTime = db.Column(db.BigInteger)
-    date_created = db.Column(db.BigInteger, default=int(time.time()))
     is_binance = db.Column(db.Boolean, default=True)
 
 
-class WalletWithdraw(db.Model):
+class WalletWithdraw(BaseModel):
     __tablename__ = 'wallet_withdraw'
 
-    id = db.Column(db.String(100), primary_key=True)
+    id_b = db.Column(db.String(100), primary_key=True)
     amount = db.Column(db.String(50))
     coin = db.Column(db.String(50))
     address = db.Column(db.String(50))
     applyTime = db.Column(db.String(50))
-    date_created = db.Column(db.BigInteger, default=int(time.time()))
     is_binance = db.Column(db.Boolean, default=True)

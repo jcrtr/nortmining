@@ -1,5 +1,7 @@
-from .base import BaseModel
-from backend.models.db import db
+import sqlalchemy as db
+from aiohttp_sqlalchemy import sa_session
+
+from backend.db import BaseModel
 
 
 class Farm(BaseModel):
@@ -11,7 +13,7 @@ class Farm(BaseModel):
 
 
 class FarmUser(BaseModel):
-    __tablename__ = 'capacity'
+    __tablename__ = 'user_farm'
 
     user_id = db.Column(db.ForeignKey('user.id'))
     farm_id = db.Column(db.ForeignKey('farm.name'))
@@ -19,3 +21,4 @@ class FarmUser(BaseModel):
     hash = db.Column(db.Float)
     consumption = db.Column(db.Float)
     percent = db.Column(db.Integer)
+

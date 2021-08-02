@@ -1,18 +1,26 @@
 import aiohttp_cors
 
-from backend.graph.views import gql_view
-from backend.views import login, sing_out, get_update
+from backend.api.auth.views import login, sing_out
 
 
-def init_routes(app, cors):
-    app.router.add_route("GET", '/update', get_update)
+def init_routes(app):
+    r = app.router
+    # r.add_route("GET", '/update', get_update)
+    #
+    r.add_route("POST", '/api/auth/login', login)
+    r.add_route("GET", '/api/auth/logout', sing_out)
+    #
+    # r.add_route("POST", "/graphql",  gql_view)
+    # r.add_route("PUT", "/graphql", gql_view)
+    # r.add_route("GET", "/graphql", gql_view)
 
-    app.router.add_route("POST", '/api/auth/login', login)
-    app.router.add_route("GET", '/api/auth/logout', sing_out)
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
 
-    app.router.add_route("POST", "/graphql",  gql_view)
-    app.router.add_route("PUT", "/graphql", gql_view)
-    app.router.add_route("GET", "/graphql", gql_view)
-
-    for route in list(app.router.routes()):
+    for route in list(r.routes()):
         cors.add(route)
