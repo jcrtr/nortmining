@@ -14,7 +14,7 @@ JWT_ALGORITHM = 'HS256'
 JWT_EXP_DELTA_SECONDS = 3600
 
 
-WALLET = '0x460a6deec1d52c9c397e92fdc8c4bc05d10f8429'
+WALLET = ''
 
 URL_DEPOSIT = 'https://api.binance.com/sapi/v1/capital/deposit/hisrec?'
 URL_WITHDRAW = 'https://api.binance.com/sapi/v1/capital/withdraw/history?'
